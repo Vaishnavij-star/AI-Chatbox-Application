@@ -1,117 +1,79 @@
 import streamlit as st
-import json
-import os
 import random
+import datetime
 
-# ---------------- MEMORY (persistent) ----------------
-MEMORY_FILE = "memory.json"
-
-def load_memory():
-    if os.path.exists(MEMORY_FILE):
-        with open(MEMORY_FILE, "r") as f:
-            return json.load(f)
-    return {}
-
-def save_memory(memory):
-    with open(MEMORY_FILE, "w") as f:
-        json.dump(memory, f)
-
-memory = load_memory()
-
-# ---------------- SESSION CHAT HISTORY ----------------
+# -------------------------------
+# Initialize session state
+# -------------------------------
+if "username" not in st.session_state:
+    st.session_state.username = ""
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
+if "greeted" not in st.session_state:
+    st.session_state.greeted = False  # Ensures greeting only once
 
-# ---------------- UI ----------------
-st.set_page_config(page_title="Vaishnavi's AI Chatbot", page_icon="🤖")
+# -------------------------------
+# Chatbot response function
+# -------------------------------
+def get_response(user_input):
+    text = user_input.lower().strip()
+    if "my name" in text:
+        return f"Your name is {st.session_state.username}. ✅"
+    elif text.startswith(("hi", "hello", "hey")):
+        return f"Hello {st.session_state.username}! 👋"
+    elif "how r u" in text or "how are you" in text:
+        return "I'm great! 😊 How about you?"
+    elif "joke" in text:
+        jokes = [
+            "Why did the Python programmer wear glasses? Because they couldn't C#! 😎",
+            "Why do programmers prefer dark mode? Because light attracts bugs! 😆",
+            "Why was the JavaScript developer sad? Because they didn’t know how to 'null' their feelings 😂",
+            "Why did the computer show up at work late? It had a hard drive! 🤣"
+        ]
+        return random.choice(jokes)
+    elif "time" in text:
+        return f"The current time is {datetime.datetime.now().strftime('%H:%M')} ⏰"
+    elif "date" in text or "day" in text:
+        return f"Today is {datetime.datetime.now().strftime('%A, %B %d, %Y')} 📅"
+    else:
+        return f"You said: {user_input}"
+
+# -------------------------------
+# Streamlit App
+# -------------------------------
 st.title("Vaishnavi's AI Chatbot 🤖")
 
-# ---------------- INTENT DETECTION ----------------
-def detect_intent(text):
-    text = text.lower()
+# --- Step 1: Name input ---
+if st.session_state.username == "":
+    name_input = st.text_input("Hi! What's your name?", key="name_input")
+    if st.button("Submit Name"):
+        if name_input.strip() != "":
+            st.session_state.username = name_input.strip()
+            if not st.session_state.greeted:
+                st.session_state.chat_history.append(
+                    {"sender": "Bot", "message": f"Hello {st.session_state.username}! 👋 Nice to meet you."}
+                )
+                st.session_state.greeted = True
 
-    if text.startswith("my name is"):
-        return "set_name"
-    if "what's my name" in text or "whats my name" in text:
-        return "get_name"
-    if any(word in text for word in ["hi", "hello", "hey"]):
-        return "greeting"
-    if "joke" in text:
-        return "joke"
-    if any(word in text for word in ["thanks", "thank you"]):
-        return "thanks"
-    if "help" in text:
-        return "help"
-    
-    return "fallback"
+# --- Step 2: Chat input ---
+if st.session_state.username != "" and st.session_state.greeted:
+    user_input = st.text_input(f"{st.session_state.username}, type your message:", key="chat_input")
+    if st.button("Send") and user_input.strip() != "":
+        # Append user message
+        st.session_state.chat_history.append({"sender": "You", "message": user_input})
+        # Append bot response
+        response = get_response(user_input)
+        st.session_state.chat_history.append({"sender": "Bot", "message": response})
 
-# ---------------- RESPONSES ----------------
-jokes = [
-    "Why don’t programmers like nature? It has too many bugs 😄",
-    "Why did the computer go to therapy? Because it had too many crashes 🤯",
-    "Why was the JavaScript developer sad? Because they didn’t know how to 'null' their feelings 😂"
-]
-
-fallback_responses = [
-    "Hmm 🤔 that’s interesting!",
-    "Tell me more!",
-    "I’m still learning — can you explain that?",
-    "Let’s talk about something fun 😄"
-]
-
-# ---------------- CHAT DISPLAY ----------------
-for sender, message in st.session_state.chat_history:
-    with st.chat_message(sender):
-        st.markdown(message)
-
-# ---------------- CHAT INPUT ----------------
-user_input = st.chat_input("Type your message...")
-
-if user_input:
-    # Show user message
-    st.session_state.chat_history.append(("user", user_input))
-
-    intent = detect_intent(user_input)
-
-    # ---------------- AI LOGIC ----------------
-    if intent == "set_name":
-        name = user_input[11:].strip()
-        memory["name"] = name
-        save_memory(memory)
-        ai_response = f"Nice to meet you, {name}! 😊"
-
-    elif intent == "get_name":
-        if "name" in memory:
-            ai_response = f"Your name is {memory['name']}. ✅"
-        else:
-            ai_response = "I don't know your name yet. Type **My name is ...**"
-
-    elif intent == "greeting":
-        if "name" in memory:
-            ai_response = f"Hello {memory['name']}! 👋"
-        else:
-            ai_response = "Hello! 👋 What’s your name?"
-
-    elif intent == "joke":
-        ai_response = random.choice(jokes)
-
-    elif intent == "thanks":
-        ai_response = "You're welcome! 😊"
-
-    elif intent == "help":
-        ai_response = (
-            "I can:\n"
-            "- Remember your name\n"
-            "- Tell jokes 😄\n"
-            "- Chat with you\n\n"
-            "Try typing **Tell me a joke** or **What's my name?**"
+# --- Step 3: Display chat history with colored bubbles ---
+for chat in st.session_state.chat_history:
+    if chat["sender"] == "You":
+        st.markdown(
+            f"<div style='text-align: right; background-color: #DCF8C6; color: black; padding:10px; border-radius:10px; margin:5px 0;'>{chat['message']}</div>", 
+            unsafe_allow_html=True
         )
-
     else:
-        ai_response = random.choice(fallback_responses)
-
-    # Show AI response
-    st.session_state.chat_history.append(("assistant", ai_response))
-
-    # Rerun to update UI
-    st.rerun()
+        st.markdown(
+            f"<div style='text-align: left; background-color: #4B4B4B; color: white; padding:10px; border-radius:10px; margin:5px 0;'>{chat['message']}</div>", 
+            unsafe_allow_html=True
+        )
