@@ -1,0 +1,24 @@
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+
+# Environment variables / secrets
+.env
+
+# VSCode settings
+.vscode/
+
+# Logs
+*.log
+
+# System files
+.DS_Store
+
+# Database / memory files (if any)
+memory.json
