@@ -42,5 +42,12 @@ git clone https://github.com/Vaishnavij-star/AI-Chatbox-Application.git
 
 cd AI-Chatbox-Application
 
+## Live Deployment
+
+You can try the chatbot live here:  
+👉 [Vaishnavi's AI Chatbot](https://ai-chatbox-application-gz5pwszor9mj4mipahuwu3.streamlit.app/)
+
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ai-chatbox-application-gz5pwszor9mj4mipahuwu3.streamlit.app/)
+
 
 
