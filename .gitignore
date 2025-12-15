@@ -22,3 +22,8 @@ env/
 
 # Database / memory files (if any)
 memory.json
+# Streamlit local files
+streamlit/
+
+# Local username file
+username.txt
