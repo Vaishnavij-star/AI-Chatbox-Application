@@ -2,6 +2,7 @@ import streamlit as st
 import random
 import datetime
 import re
+import pytz  # <-- Added for local timezone handling
 
 # -------------------------------
 # Initialize session state
@@ -84,19 +85,21 @@ weather_data = {
 # -------------------------------
 def get_response(user_input):
     text = user_input.lower().strip()
+    tz = pytz.timezone("Asia/Kolkata")  # Local timezone
+    now = datetime.datetime.now(tz)
 
     # ----------------- Greetings with current time -----------------
     if "my name" in text:
         return f"Your name is {st.session_state.username}. ✅"
     elif text.startswith(("hi", "hello", "hey")):
-        hour = datetime.datetime.now().hour
+        hour = now.hour
         if hour < 12:
             tod = "Good morning ☀️"
         elif hour < 18:
             tod = "Good afternoon 🌤️"
         else:
             tod = "Good evening 🌙"
-        current_time = datetime.datetime.now().strftime("%H:%M")
+        current_time = now.strftime("%H:%M")
         return f"{tod}, {st.session_state.username}! 👋 It's {current_time} now."
     elif "how r u" in text or "how are you" in text:
         return "I'm great! 😊 How about you?"
@@ -115,9 +118,9 @@ def get_response(user_input):
 
     # ----------------- Time/Date -----------------
     if "time" in text:
-        return f"The current time is {datetime.datetime.now().strftime('%H:%M')} ⏰"
+        return f"The current time is {now.strftime('%H:%M')} ⏰"
     if "date" in text or "day" in text:
-        return f"Today is {datetime.datetime.now().strftime('%A, %B %d, %Y')} 📅"
+        return f"Today is {now.strftime('%A, %B %d, %Y')} 📅"
 
     # ----------------- National anthem -----------------
     if "national anthem" in text:
