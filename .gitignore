@@ -1,29 +1,80 @@
+# ----------------------------
 # Python cache files
+# ----------------------------
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
+# ----------------------------
 # Virtual environment
+# ----------------------------
 venv/
 env/
+.venv/
 
+# ----------------------------
 # Environment variables / secrets
+# ----------------------------
 .env
 
-# VSCode settings
+# ----------------------------
+# IDE / Editor settings
+# ----------------------------
 .vscode/
+.idea/
 
+# ----------------------------
 # Logs
+# ----------------------------
 *.log
 
+# ----------------------------
 # System files
+# ----------------------------
 .DS_Store
 
-# Database / memory files (if any)
+# ----------------------------
+# Database / memory files
+# ----------------------------
 memory.json
+
+# ----------------------------
 # Streamlit local files
+# ----------------------------
 streamlit/
 
+# ----------------------------
 # Local username file
+# ----------------------------
 username.txt
+
+# ----------------------------
+# Python packaging / build / distribution
+# ----------------------------
+*.egg-info/
+dist/
+build/
+*.egg
+*.manifest
+*.spec
+
+# ----------------------------
+# Test / Coverage / Cache
+# ----------------------------
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+.ipynb_checkpoints/
+
+# ----------------------------
+# Misc tools / environment
+# ----------------------------
+.installed.cfg
+.pyre/
+.mypy_cache/
+.dmypy.json
+.dmypy.json
